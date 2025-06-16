@@ -1,10 +1,10 @@
-# AdGuard Home Log Sync
+# AdGuardHome-LogSync
 
 A Python tool to synchronize AdGuard Home query logs between multiple instances.
 
 ## Description
 
-AdGuard Home Log Sync allows you to merge and synchronize query logs from multiple AdGuard Home instances. This is useful when you're running multiple AdGuard Home instances and want to maintain a unified query log.
+[AdGuardHome-LogSync](https://pypi.org/project/adguardhome-logsync/) allows you to merge and synchronize query logs from multiple AdGuard Home instances. This is useful when you're running multiple AdGuard Home instances and want to maintain a unified query log.
 
 ## Features
 
