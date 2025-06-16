@@ -1,6 +1,6 @@
 [project]
 name = "adguardhome-logsync"
-version = "0.1.0"
+version = "0.1.1"
 description = "A Python tool to synchronize AdGuard Home query logs between multiple instances"
 readme = "README.md"
 license = "BSD-3-Clause"
@@ -27,20 +27,19 @@ dynamic = ["dependencies"]
 dependencies = {file = ["requirements.txt"]}
 
 [project.urls]
-Homepage = "https://github.com/xz-dev/AdGuardHomeLogSync"
-Repository = "https://github.com/xz-dev/AdGuardHomeLogSync"
-Issues = "https://github.com/xz-dev/AdGuardHomeLogSync/issues"
-
-[project.scripts]
-adguardhome-logsync = "main:main"
+Homepage = "https://github.com/xz-dev/AdGuardHome-LogSync"
+Repository = "https://github.com/xz-dev/AdGuardHome-LogSync"
+Issues = "https://github.com/xz-dev/AdGuardHome-LogSync/issues"
 
 [build-system]
 requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
+[project.scripts]
+adguardhome-logsync = "adguardhome_logsync.__main__:main"
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["utils*"]
+include = ["adguardhome_logsync*"]
 
 [tool.setuptools.package-data]
 "*" = ["*.md", "*.txt"]

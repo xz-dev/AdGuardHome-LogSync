@@ -1,14 +1,14 @@
-import asyncio
 from argparse import ArgumentParser
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 
-from utils.querylog_copy import backup_querylog, move_new_querylog
-from utils.querylog_merge import merge_querylogs
+from .utils.querylog_copy import backup_querylog, move_new_querylog
+from .utils.querylog_merge import merge_querylogs
 
 
 async def main():
     arg_parser = ArgumentParser(
+        prog="adguardhome-logsync",
         description="Synchronize AdGuard Home Log between multi-instances"
     )
 
@@ -81,7 +81,3 @@ async def main():
     except Exception as e:
         print(f"Error during log synchronization: {e}")
         raise
-
-
-if __name__ == "__main__":
-    asyncio.run(main())
