@@ -1,0 +1,46 @@
+[project]
+name = "adguardhome-logsync"
+version = "0.1.0"
+description = "A Python tool to synchronize AdGuard Home query logs between multiple instances"
+readme = "README.md"
+license = "BSD-3-Clause"
+requires-python = ">=3.9"
+authors = [
+    {name = "xz-dev", email = "xiangzhedev@gmail.com"},
+]
+keywords = ["adguard", "dns", "log", "sync"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: System Administrators",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: System :: Networking :: Monitoring",
+    "Topic :: System :: Systems Administration",
+]
+dynamic = ["dependencies"]
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
+
+[project.urls]
+Homepage = "https://github.com/xz-dev/AdGuardHomeLogSync"
+Repository = "https://github.com/xz-dev/AdGuardHomeLogSync"
+Issues = "https://github.com/xz-dev/AdGuardHomeLogSync/issues"
+
+[project.scripts]
+adguardhome-logsync = "main:main"
+
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["utils*"]
+
+[tool.setuptools.package-data]
+"*" = ["*.md", "*.txt"]
