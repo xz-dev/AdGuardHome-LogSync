@@ -38,7 +38,7 @@ async def main():
     arg_parser.add_argument(
         "--retention",
         type=int,
-        help="Log retention time in seconds (logs older than this will be removed)",
+        help="Log retention time in seconds (logs older than this will be removed, default: 604800 = 7 days)",
         default=7 * 24 * 60 * 60,  # 7 days by default
     )
 

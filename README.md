@@ -53,7 +53,7 @@ adguardhome-logsync --name <instance-name> --path <querylog-path> --backup <back
 - `--name`: Current instance nickname (required)
 - `--path`: Path to the query log file (required)  
 - `--backup`: Path to backup directory (required)
-- `--retention`: Log retention time in seconds (optional, default: 86400 = 24 hours)
+- `--retention`: Log retention time in seconds (optional, default: 604800 = 7 days)
 
 ### Examples
 
@@ -84,9 +84,9 @@ adguardhome-logsync --name genx --path ~/adg/workdir/data/querylog.json --backup
 | 1 hour | 3600 | `--retention 3600` |
 | 6 hours | 21600 | `--retention 21600` |
 | 12 hours | 43200 | `--retention 43200` |
-| 1 day | 86400 | `--retention 86400` (default) |
+| 1 day | 86400 | `--retention 86400` |
 | 3 days | 259200 | `--retention 259200` |
-| 1 week | 604800 | `--retention 604800` |
+| 1 week | 604800 | `--retention 604800` (default) |
 | 1 month | 2592000 | `--retention 2592000` |
 
 ### Example Output
