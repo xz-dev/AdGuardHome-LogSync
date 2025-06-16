@@ -1,14 +1,17 @@
-from sortedcontainers import SortedList
+import asyncio
+from datetime import datetime
+
 import aiofiles
 import orjson
-import asyncio
+from sortedcontainers import SortedList
 
 
 async def merge_querylog_streaming(
     full_querylogs: SortedList[tuple[str, bytes]],
     log_file_path: str,
-    chunk_size: int = 10000,  # 每1万行插入一次
-    lock: asyncio.Lock = None,
+    chunk_size: int,
+    lock: asyncio.Lock,
+    active_time: float,
 ):
     """
     Stream process a single querylog file and insert records in chunks to reduce memory pressure.
@@ -31,6 +34,10 @@ async def merge_querylog_streaming(
             if line:
                 try:
                     querylog_json = orjson.loads(line)
+                    date_time = datetime.fromisoformat(querylog_json["T"])
+                    # Skip records older than active_time
+                    if date_time.timestamp() < active_time:
+                        continue
                     chunk_buffer.append((querylog_json["T"], line))
                     line_count += 1
 
@@ -55,7 +62,7 @@ async def merge_querylog_streaming(
             full_querylogs.update(chunk_buffer)
 
 
-async def merge_querylogs(logs_paths: list[str]) -> bytes:
+async def merge_querylogs(logs_paths: list[str], new_log_path: str, active_time: float):
     """
     Merge multiple querylog files using streaming approach with concurrent processing.
 
@@ -63,10 +70,12 @@ async def merge_querylogs(logs_paths: list[str]) -> bytes:
     into a SortedList incrementally to reduce memory spikes.
 
     Args:
-        logs_paths: List of paths to querylog files to merge
+        logs_paths (list[str]): List of paths to querylog files to merge
+        new_log_path (str): Path where the merged querylog will be saved
+        active_time (float): Timestamp threshold for retention policy; records older than this will be discarded
 
     Returns:
-        bytes: Merged and sorted querylog content as bytes
+        None
     """
     full_querylogs = SortedList()
     lock = asyncio.Lock()
@@ -74,12 +83,18 @@ async def merge_querylogs(logs_paths: list[str]) -> bytes:
     # Process all files concurrently
     tasks = [
         merge_querylog_streaming(
-            full_querylogs, log_file_path, chunk_size=10000, lock=lock
+            full_querylogs,
+            log_file_path,
+            chunk_size=10000,
+            lock=lock,
+            active_time=active_time,
         )
         for log_file_path in logs_paths
     ]
 
     await asyncio.gather(*tasks)
 
-    # Generate result
-    return b"\n".join(querylog[1] for querylog in full_querylogs)
+    async with aiofiles.open(new_log_path, "wb") as new_log_file:
+        for i in range(len(full_querylogs)):
+            log_data = full_querylogs[i][1]
+            await new_log_file.write(log_data + b"\n")

@@ -1,3 +1,4 @@
+import time
 from argparse import ArgumentParser
 from pathlib import Path
 from tempfile import NamedTemporaryFile
@@ -9,7 +10,7 @@ from .utils.querylog_merge import merge_querylogs
 async def main():
     arg_parser = ArgumentParser(
         prog="adguardhome-logsync",
-        description="Synchronize AdGuard Home Log between multi-instances"
+        description="Synchronize AdGuard Home Log between multi-instances",
     )
 
     # Add command line arguments
@@ -34,6 +35,13 @@ async def main():
         required=True,
     )
 
+    arg_parser.add_argument(
+        "--retention",
+        type=int,
+        help="Log retention time in seconds (logs older than this will be removed)",
+        default=7 * 24 * 60 * 60,  # 7 days by default
+    )
+
     args = arg_parser.parse_args()
 
     try:
@@ -46,7 +54,17 @@ async def main():
         if not backup_path.exists():
             raise FileNotFoundError(f"Backup directory not found: {backup_path}")
 
+        # Calculate active_time (current time - retention seconds)
+        current_time = time.time()
+        active_time = current_time - args.retention
+
         print(f"Starting log synchronization for instance: {args.name}")
+        print(
+            f"Log retention: {args.retention} seconds ({args.retention / 3600:.1f} hours)"
+        )
+        print(
+            f"Logs older than {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(active_time))} will be removed"
+        )
 
         # Copy the querylog to backup path
         print("Backing up querylog...")
@@ -62,15 +80,15 @@ async def main():
 
         print(f"Found {len(logs_paths)} querylog files")
 
-        # Merge the querylogs
-        print("Merging querylogs...")
-        new_querylog_bytes = await merge_querylogs(logs_paths)
-
-        # Write the new querylog to a temporary file and move it
-        print("Writing merged querylog...")
-        with NamedTemporaryFile(delete=False, suffix=".json") as tmp_file:
-            tmp_file.write(new_querylog_bytes)
-            tmp_file_path = tmp_file.name
+        # Merge the querylogs with retention policy
+        tmp_file = NamedTemporaryFile(delete=False, suffix=".json")
+        tmp_file_path = tmp_file.name
+        print(f"Merging querylogs into temporary file: {tmp_file_path}")
+        await merge_querylogs(
+            logs_paths=logs_paths,
+            active_time=active_time,
+            new_log_path=tmp_file_path,
+        )
 
         # Move the new querylog to the original path
         print(f"Moving to updated querylog at {tmp_file_path}...")

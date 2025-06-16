@@ -1,6 +1,6 @@
 [project]
 name = "adguardhome-logsync"
-version = "0.1.1"
+version = "0.1.2"
 description = "A Python tool to synchronize AdGuard Home query logs between multiple instances"
 readme = "README.md"
 license = "BSD-3-Clause"
